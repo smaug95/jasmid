@@ -151,8 +151,13 @@ PROGRAMS = {
 	50: StringProgram
 };
 
-function Synth(sampleRate) {
-	
+function Synth(sampleRate, temperament) {
+    if (temperament.hasOwnProperty("getPitchForMidiNote")) {
+        midiToFrequency = function(midiNote) {
+            return temperament.getPitchForMidiNote(midiNote);
+        };
+    }
+
 	var generators = [];
 	
 	function addGenerator(generator) {
