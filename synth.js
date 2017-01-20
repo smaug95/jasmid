@@ -11,7 +11,7 @@ function SineGenerator(freq) {
 			buf[offset++] += result;
 			t++;
 		}
-	}
+	};
 	
 	return self;
 }
@@ -28,13 +28,13 @@ function SquareGenerator(freq, phase) {
 			buf[offset++] += result;
 			t++;
 		}
-	}
+	};
 	
 	return self;
 }
 
 function ADSRGenerator(child, attackAmplitude, sustainAmplitude, attackTimeS, decayTimeS, releaseTimeS) {
-	var self = {'alive': true}
+	var self = {'alive': true};
 	var attackTime = sampleRate * attackTimeS;
 	var decayTime = sampleRate * (attackTimeS + decayTimeS);
 	var decayRate = (attackAmplitude - sustainAmplitude) / (decayTime - attackTime);
@@ -48,7 +48,7 @@ function ADSRGenerator(child, attackAmplitude, sustainAmplitude, attackTimeS, de
 		releaseTime = t;
 		self.released = true;
 		endTime = releaseTime + sampleRate * releaseTimeS;
-	}
+	};
 	
 	self.generate = function(buf, offset, count) {
 		if (!self.alive) return;
@@ -103,7 +103,7 @@ function ADSRGenerator(child, attackAmplitude, sustainAmplitude, attackTimeS, de
 				}
 			}
 		}
-	}
+	};
 	
 	return self;
 }
@@ -126,7 +126,7 @@ PianoProgram = {
 			this.attackTime, this.decayTime, this.releaseTime
 		);
 	}
-}
+};
 
 StringProgram = {
 	'createNote': function(note, velocity) {
@@ -137,7 +137,7 @@ StringProgram = {
 			0.4, 0.8, 0.4
 		);
 	}
-}
+};
 
 PROGRAMS = {
 	41: StringProgram,
