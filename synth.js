@@ -16,6 +16,29 @@ function SineGenerator(freq) {
 	return self;
 }
 
+function OrganGenerator(freq) {
+    var self = {'alive': true};
+    var period = sampleRate / freq;
+    var t = 0;
+
+    self.generate = function(buf, offset, count) {
+        for (var i=count; i; i--) {
+            var phase = t / period;
+            var result = Math.sin(phase * 2 * Math.PI)
+                         + 0.2*Math.sin(phase * 2 * 2 * Math.PI)
+                         + 0.05*Math.sin(phase * 2 * 3 * Math.PI)
+                         + 0.03*Math.sin(phase * 2 * 4 * Math.PI);
+            result *= -Math.pow(2, -i/10) + 1;
+            result *= -Math.pow(2, (i - count)/10) + 1;
+            buf[offset++] += result;
+            buf[offset++] += result;
+            t++;
+        }
+    };
+
+    return self;
+}
+
 function SquareGenerator(freq, phase) {
 	var self = {'alive': true};
 	var period = sampleRate / freq;
@@ -126,6 +149,22 @@ PianoProgram = {
 			this.attackTime, this.decayTime, this.releaseTime
 		);
 	}
+};
+
+OrganProgram = {
+    'attackAmplitude': 0.2,
+    'sustainAmplitude': 0.1,
+    'attackTime': 0.02,
+    'decayTime': 0.3,
+    'releaseTime': 0.02,
+    'createNote': function(note, velocity) {
+        var frequency = midiToFrequency(note);
+        return ADSRGenerator(
+            OrganGenerator(frequency),
+            this.attackAmplitude * (velocity / 128), this.sustainAmplitude * (velocity / 128),
+            this.attackTime, this.decayTime, this.releaseTime
+        );
+    }
 };
 
 StringProgram = {

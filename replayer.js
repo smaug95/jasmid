@@ -1,8 +1,12 @@
-function Replayer(midiFile, synth) {
+function Replayer(midiFile, synth, defaultProgram) {
 	var trackStates = [];
 	var beatsPerMinute = 120;
 	var ticksPerBeat = midiFile.header.ticksPerBeat;
 	var channelCount = 16;
+
+	if (!defaultProgram) {
+		defaultProgram = PianoProgram;
+	}
 	
 	for (var i = 0; i < midiFile.tracks.length; i++) {
 		trackStates[i] = {
@@ -35,7 +39,7 @@ function Replayer(midiFile, synth) {
 			}
 		}
 		function setProgram(programNumber) {
-			currentProgram = PROGRAMS[programNumber] || PianoProgram;
+			currentProgram = PROGRAMS[programNumber] || defaultProgram;
 		}
 		
 		return {
