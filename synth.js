@@ -191,11 +191,6 @@ PROGRAMS = {
 };
 
 function Synth(sampleRate, temperament) {
-    if (temperament.hasOwnProperty("getPitchForMidiNote")) {
-        midiToFrequency = function(midiNote) {
-            return temperament.getPitchForMidiNote(midiNote);
-        };
-    }
 
 	var generators = [];
 	
@@ -218,11 +213,22 @@ function Synth(sampleRate, temperament) {
 			if (!generators[i].alive) generators.splice(i, 1);
 		}
 	}
+
+    function setTemperament (temperament) {
+        if (temperament.hasOwnProperty("getPitchForMidiNote")) {
+            midiToFrequency = function(midiNote) {
+                return temperament.getPitchForMidiNote(midiNote);
+            };
+        }
+    }
+
+    setTemperament(temperament);
 	
 	return {
 		'sampleRate': sampleRate,
 		'addGenerator': addGenerator,
 		'generate': generate,
-		'generateIntoBuffer': generateIntoBuffer
+		'generateIntoBuffer': generateIntoBuffer,
+		'setTemperament': setTemperament
 	}
 }
