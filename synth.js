@@ -27,9 +27,9 @@ function OrganGenerator(freq) {
             var result = Math.sin(phase * 2 * Math.PI)
                          + 0.2*Math.sin(phase * 2 * 2 * Math.PI)
                          + 0.05*Math.sin(phase * 2 * 3 * Math.PI)
-                         + 0.03*Math.sin(phase * 2 * 4 * Math.PI);
-            result *= -Math.pow(2, -i/10) + 1;
-            result *= -Math.pow(2, (i - count)/10) + 1;
+                         + 0.03*Math.sin(phase * 2 * 4 * Math.PI)
+                         + 0.005*Math.sin(phase * 2 * 5 * Math.PI)
+                         + 0.003*Math.sin(phase * 2 * 6 * Math.PI);
             buf[offset++] += result;
             buf[offset++] += result;
             t++;
