@@ -1,5 +1,23 @@
 var sampleRate = 44100; /* hard-coded in Flash player */
 
+var audioContext;
+var AudioContextClass = (window.AudioContext ||
+                         window.webkitAudioContext ||
+                         window.mozAudioContext ||
+                         window.oAudioContext ||
+                         window.msAudioContext);
+
+/**
+ * Use this getter function to benefit from lazy instantiation. This is important in mobile safari where the
+ * AudioContext has to be constructed in response to a user event.
+ */
+function getAudioContext() {
+	if (AudioContextClass && !audioContext) {
+        audioContext = new AudioContextClass();
+	}
+	return audioContext;
+}
+
 function AudioPlayer(generator, opts, stopObject, stopCallback) {
 	if (!opts) opts = {};
 	if (!stopObject) stopObject = {};
@@ -9,7 +27,6 @@ function AudioPlayer(generator, opts, stopObject, stopCallback) {
 	var checkInterval = latency * 100; /* in ms */
 
 	var audioElement = new Audio();
-	var webkitAudio = window.AudioContext || window.webkitAudioContext;
 	var requestStop = false;
 
 	if (audioElement.mozSetup) {
@@ -41,17 +58,17 @@ function AudioPlayer(generator, opts, stopObject, stopCallback) {
 				requestStop = true;
 			}
 		}
-	} else if (webkitAudio) {
+	} else if (AudioContextClass) {
 		// Uses Webkit Web Audio API if available
-		var context = new webkitAudio();
-		sampleRate = context.sampleRate;
+		var audioContext = getAudioContext();
+		sampleRate = audioContext.sampleRate;
 
 		var channelCount = 2;
 		var bufferSize = 4096*4; // Higher for less gitches, lower for less latency
 
-		var node = context.createScriptProcessor(bufferSize, 0, channelCount);
+		var node = audioContext.createScriptProcessor(bufferSize, 0, channelCount);
 
-		node.onaudioprocess = function(e) { process(e) };
+		node.onaudioprocess = process;
 
 		function process(e) {
 			if (generator.finished) {
@@ -72,7 +89,7 @@ function AudioPlayer(generator, opts, stopObject, stopCallback) {
 		}
 
 		// start
-		node.connect(context.destination);
+		node.connect(audioContext.destination);
 
 		return {
 			'stop': function() {
@@ -80,7 +97,7 @@ function AudioPlayer(generator, opts, stopObject, stopCallback) {
 				node.disconnect();
 				requestStop = true;
 			},
-			'type': 'Webkit Audio'
+			'type': 'Web Audio API'
 		}
 
 	} else {
