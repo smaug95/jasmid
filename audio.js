@@ -14,6 +14,11 @@ var AudioContextClass = (window.AudioContext ||
 function getAudioContext() {
 	if (AudioContextClass && !audioContext) {
         audioContext = new AudioContextClass();
+        console.log("Created audio context");
+
+        // hack for iOS, because Web Audio API must be initialized in response to a user event. Just call
+		// getAudioContext() before fetching the data because in the callback it won't work.
+		audioContext.createScriptProcessor(256, 0, 1);
 	}
 	return audioContext;
 }
